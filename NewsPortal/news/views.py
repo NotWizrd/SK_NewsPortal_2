@@ -1,7 +1,12 @@
 # Импортируем класс, который говорит нам о том,
 # что в этом представлении мы будем выводить список объектов из БД
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.urls import reverse_lazy
 from django.utils.datetime_safe import datetime
-from django.views.generic import ListView, DetailView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+
+from .filters import NewsFilter
+from .forms import NewForm
 from .models import Post
 
 
@@ -15,10 +20,23 @@ class PostList(ListView):
     template_name = 'news.html'
     # Это имя списка, в котором будут лежать все объекты.
     # Его надо указать, чтобы обратиться к списку объектов в html-шаблоне.
-    context_object_name = 'news'
+    context_object_name = 'post_l'
+    paginate_by = 10
 
     # Метод get_context_data позволяет нам изменить набор данных,
     # который будет передан в шаблон.
+
+    def get_queryset(self):
+        # Получаем обычный запрос
+        queryset = super().get_queryset()
+        # Используем наш класс фильтрации.
+        # self.request.GET содержит объект QueryDict
+        # Сохраняем нашу фильтрацию в объекте класса,
+        # чтобы потом добавить в контекст и использовать в шаблоне.
+        self.filterset = NewsFilter(self.request.GET, queryset)
+        # Возвращаем из функции отфильтрованный список новостей
+        return self.filterset.qs
+
     def get_context_data(self, **kwargs):
         # С помощью super() мы обращаемся к родительским классам
         # и вызываем у них метод get_context_data с теми же аргументами,
@@ -26,10 +44,9 @@ class PostList(ListView):
         # В ответе мы должны получить словарь.
         context = super().get_context_data(**kwargs)
         # К словарю добавим текущую дату в ключ 'time_now'.
-        context['time_now'] = datetime.utcnow()
+        context['filterset'] = self.filterset
         # Добавим ещё одну пустую переменную,
         # чтобы на её примере рассмотреть работу ещё одного фильтра.
-        context['next_sale'] = None
         return context
 
 
@@ -55,3 +72,60 @@ class PostDetail(DetailView):
         # чтобы на её примере рассмотреть работу ещё одного фильтра.
         context['next_sale'] = None
         return context
+
+
+class PostSearch(ListView):
+    model = Post
+    template_name = 'flatpages/post_search.html'
+    context_object_name = 'search'
+    paginate_by = 10
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        self.filterset = NewsFilter(self.request.GET, queryset)
+        return self.filterset.qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['filterset'] = self.filterset
+        return context
+
+
+class NewCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
+    permission_required = ('news.add_post',)
+    raise_exception = True
+    # Указываем нашу разработанную форму
+    form_class = NewForm
+    # модель новостей
+    model = Post
+    # и новый шаблон, в котором используется форма.
+    template_name = 'flatpages/post_create.html'
+
+    def form_valid(self, form):
+        post = form.save(commit=False)
+        if self.request.path == '/articles/create/':
+            post.categoryType = 'AR'
+        post.save()
+        return super().form_valid(form)
+
+
+class NewUpdate(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
+    permission_required = ('news.change_post',)
+    form_class = NewForm
+    model = Post
+    template_name = 'flatpages/post_edit.html'
+
+    def form_valid(self, form):
+        post = form.save(commit=False)
+        if self.request.path == '/articles/<int:pk>/edit/':
+            post.categoryType = 'AR'
+        post.save()
+        return super().form_valid(form)
+
+
+# Представление удаляющее пост
+class NewDelete(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
+    permission_required = ('news.delete_post',)
+    model = Post
+    template_name = 'flatpages/post_delete.html'
+    success_url = reverse_lazy('post_list')

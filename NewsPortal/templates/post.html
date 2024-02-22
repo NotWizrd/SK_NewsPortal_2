@@ -15,7 +15,7 @@
         <td style="width: 200px;"><u>Категория</u></td>
     </tr>
     <tr>
-        <td style="width: 200px;">{{ post.author.authorUser }}</td>
+        <td style="width: 200px;">{{ post.author.authorUser.username }}</td>
         <td style="width: 210px;">{{ post.title }}</td>
         <td style="width: 200px;">{{ post.dateCreation|date:'d M Y' }}</td>
         <td style="width: 200px;">{{ post.text|truncatewords:20|censor  }}</td>
