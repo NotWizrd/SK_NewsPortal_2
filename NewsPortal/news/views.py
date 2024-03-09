@@ -111,6 +111,7 @@ class NewCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
 
 class NewUpdate(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     permission_required = ('news.change_post',)
+    raise_exception = True
     form_class = NewForm
     model = Post
     template_name = 'flatpages/post_edit.html'
@@ -126,6 +127,7 @@ class NewUpdate(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
 # Представление удаляющее пост
 class NewDelete(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     permission_required = ('news.delete_post',)
+    raise_exception = True
     model = Post
     template_name = 'flatpages/post_delete.html'
     success_url = reverse_lazy('post_list')

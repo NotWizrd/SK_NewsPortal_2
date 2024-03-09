@@ -2,52 +2,63 @@
 {% load custom_filters %}
 
 {% block content %}
-<h3>{{ time_now|date:'M d Y' }}</h3>
-<hr>
-{% if post_l %}
-<h2> Колличество постов {{ post_l|length }}</h2>
-<table style="margin-left: auto; margin-right: auto;">
-    <tr>
-        <td style="width: 200px;"><u>Автор</u></td>
-        <td style="width: 210px;"><u>Заголовок</u></td>
-        <td style="width: 200px;"><u>Дата публикации</u></td>
-        <td style="width: 200px;"><u>Содержание</u></td>
-        <td style="width: 200px;"><u>Категория</u></td>
-    </tr>
-    {% for post in post_l %}
-    <tr>
-        <td style="width: 200px;">{{ post.author.authorUser }}</td>
-        <td style="width: 210px;">{{ post.title }}</td>
-        <td style="width: 200px;">{{ post.dateCreation|date:'d M Y' }}</td>
-        <td style="width: 200px;">{{ post.text|truncatewords:20|censor }}</td>
-        <td style="width: 200px;">
-            {% for cat in post.postCategory.all %}
-                {{ cat.name }}
+    <h3>{{ time_now|date:'M d Y' }}</h3>
+    <hr>
+    {% if post_l %}
+        <h2> Колличество постов {{ post_l|length }}</h2>
+        <table style="margin-left: auto; margin-right: auto;">
+            <tr>
+                <td style="width: 200px;">Автор</td>
+                <td style="width: 210px;">Заголовок</td>
+                <td style="width: 200px;">Дата публикации</td>
+                <td style="width: 200px;">Содержание</td>
+                <td style="width: 200px;">Категория</td>
+                {% if perms.news.change_post or perms.news.delete_post %}
+                    <td style="width: 200px;">Действие</td>
+                {% endif %}
+            </tr>
+            {% for post in post_l %}
+            <tr>
+                <td style="width: 200px;">{{ post.author.authorUser }}</td>
+                <td style="width: 210px;">{{ post.title }}</td>
+                <td style="width: 200px;">{{ post.dateCreation|date:'d M Y' }}</td>
+                <td style="width: 200px;">{{ post.text|truncatewords:20|censor }}</td>
+                <td style="width: 200px;">
+                    {% for cat in post.postCategory.all %}
+                        {{ cat.name }}
+                    {% endfor %}
+                </td>
+                <td>
+                    {% if perms.news.change_post %}
+                        <a href="{% url 'news_create' post_detail.id %}">Изменить</a>
+                    {% endif %}
+                    {% if perms.news.delete_post %}
+                        <a href="{% url 'news_update' post_detail.id %}">Удалить</a>
+                    {% endif %}
+                </td>
+            </tr>
             {% endfor %}
-        </td>
-    </tr>
-    {% endfor %}
-</table>
-{% else %}
-<h3>Публикаций нет!</h3>
-{% endif %}
+        </table>
+    {% else %}
+    <h3>Публикаций нет!</h3>
+    {% endif %}
 
-   {% if page_obj.has_previous %}
-       <a href="?page=1">1</a>
-       {% if page_obj.previous_page_number != 1 %}
-           ...
-           <a href="?page={{ page_obj.previous_page_number }}">{{ page_obj.previous_page_number }}</a>
-       {% endif %}
-   {% endif %}
+    {% if page_obj.has_previous %}
+        <a href="?page=1">1</a>
+        {% if page_obj.previous_page_number != 1 %}
+            ...
+            <a href="?page={{ page_obj.previous_page_number }}">{{ page_obj.previous_page_number }}</a>
+        {% endif %}
+    {% endif %}
 
-   {{ page_obj.number }}
+    {{ page_obj.number }}
 
-   {% if page_obj.has_next %}
-       <a href="?page={{ page_obj.next_page_number }}">{{ page_obj.next_page_number }}</a>
-       {% if paginator.num_pages != page_obj.next_page_number %}
-           ...
-           <a href="?page={{ page_obj.paginator.num_pages }}">{{ page_obj.paginator.num_pages }}</a>
-       {% endif %}
-   {% endif %}
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}">{{ page_obj.next_page_number }}</a>
+        {% if paginator.num_pages != page_obj.next_page_number %}
+            ...
+            <a href="?page={{ page_obj.paginator.num_pages }}">{{ page_obj.paginator.num_pages }}</a>
+        {% endif %}
+    {% endif %}
 
 {% endblock content %}
