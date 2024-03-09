@@ -2,10 +2,14 @@
 {% load custom_filters %}
 
 {% block content %}
+
     <h3>{{ time_now|date:'M d Y' }}</h3>
+    <p style="text-align: left;"><a href="{% url 'post_search' %}">Найти новость/статью</a></p>
+    <p style="text-align: left;"><a href="{% url 'news_create' %}">Создать новость</a></p>
+    <p style="text-align: left;"><a href="{% url 'articles_create' %}">Создать статью</a></p>
     <hr>
     {% if post_l %}
-        <h2> Колличество постов {{ post_l|length }}</h2>
+        <h1> Колличество постов {{ post_l|length }}</h1>
         <table style="margin-left: auto; margin-right: auto;">
             <tr>
                 <td style="width: 200px;">Автор</td>
@@ -30,10 +34,10 @@
                 </td>
                 <td>
                     {% if perms.news.change_post %}
-                        <a href="{% url 'news_create' post_detail.id %}">Изменить</a>
+                        <a href="{% url 'news_update' pk=post.id %}">Изменить</a>
                     {% endif %}
                     {% if perms.news.delete_post %}
-                        <a href="{% url 'news_update' post_detail.id %}">Удалить</a>
+                        <a href="{% url 'news_delete' post.id %}">Удалить</a>
                     {% endif %}
                 </td>
             </tr>

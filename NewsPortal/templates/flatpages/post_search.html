@@ -25,7 +25,7 @@
 
            {% for post in search %}
            <tr>
-               <td style="width: 200px;">{{ post.title }}</td>
+               <td style="width: 200px;"><a href="{% url 'post_detail' pk=post.id %}">{{ post.title }}</a></td>
                <td style="width: 200px;">
                     {% for cat in post.postCategory.all %}
                         {{ cat.name }}
