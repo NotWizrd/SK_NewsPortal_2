@@ -162,14 +162,14 @@ ACCOUNT_FORMS = {"signup": "accounts.forms.CustomSignupForm"}
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 EMAIL_HOST = 'smtp.yandex.ru'
 EMAIL_PORT = 465
-EMAIL_HOST_USER = "AdamTestAkk"
-EMAIL_HOST_PASSWORD = "xftdwvydffmnelxu"
+EMAIL_HOST_USER = ""
+EMAIL_HOST_PASSWORD = ""
 EMAIL_USE_TLS = False
 EMAIL_USE_SSL = True
 
-DEFAULT_FROM_EMAIL = "AdamTestAkk@yandex.ru"
+DEFAULT_FROM_EMAIL = ""
 
-SERVER_EMAIL = "AdamTestAkk@yandex.ru"
+SERVER_EMAIL = ""
 
 
 APSCHEDULER_DATETIME_FORMAT = 'N j, Y, f:s a'
