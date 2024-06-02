@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Новый пост в категории {{ post.postcategory }}</title>
+</head>
+<body>
+<h2> Новая публикация {{ Post.title }} в категории {{ Post.postCategory }}</h2>
+<ul>
+    <li><a href="{{ link }}{{ post.get_absolute_url }}">{{ post.title }}</a></li>
+</ul>
+</body>
+</html>

@@ -21,7 +21,7 @@ def my_job():
     last_week = today - datetime.timedelta(days=7)
     posts = Post.objects.filter(dateCreation__gte=last_week)
     categories = set(posts.values_list('postCategory__name', flat=True))
-    subscriptions = set(Category.objects.filter(name__in=categories).values_list('subscriptions__email', flat=True))
+    subscriptions = set(Category.objects.filter(name__in=categories).values_list('subscriptions__user__email', flat=True))
     html_content = render_to_string(
         'news_post_mail.html',
         {
@@ -67,7 +67,7 @@ class Command(BaseCommand):
 
         scheduler.add_job(
             my_job,
-            trigger=CronTrigger(second="*/10"),  # Every 20 seconds
+            trigger=CronTrigger(day_of_week="fri", hour="18", minute="00"),
             id="my_job",  # The `id` assigned to each job MUST be unique
             max_instances=1,
             replace_existing=True,
@@ -77,7 +77,7 @@ class Command(BaseCommand):
         scheduler.add_job(
             delete_old_job_executions,
             trigger=CronTrigger(
-                day_of_week="mon", hour="00", minute="00"
+                day_of_week="fri", hour="18", minute="00"
             ),
             id="delete_old_job_executions",
             max_instances=1,
